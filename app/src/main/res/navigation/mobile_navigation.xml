@@ -3,23 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_upload">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.onionshare.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/navigation_upload"
+        android:name="com.example.onionshare.ui.home.UploadFragment"
+        android:label="@string/title_upload"
+        tools:layout="@layout/fragment_upload" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.onionshare.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_download"
+        android:name="com.example.onionshare.ui.dashboard.DownloadFragment"
+        android:label="@string/title_download"
+        tools:layout="@layout/fragment_download" />
 
-    <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.onionshare.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
 </navigation>

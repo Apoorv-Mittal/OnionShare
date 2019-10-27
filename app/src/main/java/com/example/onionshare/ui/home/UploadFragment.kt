@@ -1,4 +1,4 @@
-package com.example.onionshare.ui.dashboard
+package com.example.onionshare.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.onionshare.R
 
-class DashboardFragment : Fragment() {
+class UploadFragment : Fragment() {
 
-    private lateinit var dashboardViewModel: DashboardViewModel
+    private lateinit var uploadViewModel: UploadViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        dashboardViewModel =
-            ViewModelProviders.of(this).get(DashboardViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
-        val textView: TextView = root.findViewById(R.id.text_dashboard)
-        dashboardViewModel.text.observe(this, Observer {
+        uploadViewModel =
+            ViewModelProviders.of(this).get(UploadViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_upload, container, false)
+        val textView: TextView = root.findViewById(R.id.text_home)
+        uploadViewModel.text.observe(this, Observer {
             textView.text = it
         })
         return root

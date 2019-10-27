@@ -1,4 +1,4 @@
-package com.example.onionshare.ui.home
+package com.example.onionshare.ui.dashboard
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.onionshare.R
 
-class HomeFragment : Fragment() {
+class DownloadFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var downloadViewModel: DownloadViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        homeViewModel =
-            ViewModelProviders.of(this).get(HomeViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
-        homeViewModel.text.observe(this, Observer {
+        downloadViewModel =
+            ViewModelProviders.of(this).get(DownloadViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_download, container, false)
+        val textView: TextView = root.findViewById(R.id.text_dashboard)
+        downloadViewModel.text.observe(this, Observer {
             textView.text = it
         })
         return root
