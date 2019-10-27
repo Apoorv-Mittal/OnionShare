@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
 
             val success = fileTorBin != null && fileTorBin.canExecute()
 
+
             val message = "Tor install success? $success"
 
             if (success) {
@@ -49,12 +50,12 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT)
+            Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
 
 
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(applicationContext, e.message, Toast.LENGTH_SHORT)
+            Toast.makeText(applicationContext, e.message, Toast.LENGTH_SHORT).show()
 
         }
     }
@@ -108,7 +109,7 @@ class MainActivity : AppCompatActivity() {
     private fun exec(cmd: String, wait: Boolean): Int {
         val shellResult = Shell.run(cmd)
 
-        //  debug("CMD: " + cmd + "; SUCCESS=" + shellResult.isSuccessful());
+//        debug("CMD: " + cmd + "; SUCCESS=" + shellResult.isSuccessful());
 
         if (!shellResult.isSuccessful()) {
             throw Exception("Error: " + shellResult.exitCode + " ERR=" + shellResult.getStderr() + " OUT=" + shellResult.getStdout())
