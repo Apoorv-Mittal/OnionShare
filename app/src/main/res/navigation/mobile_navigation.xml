@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/navigation_upload"
-        android:name="com.example.onionshare.ui.home.UploadFragment"
+        android:name="com.example.onionshare.ui.upload.UploadFragment"
         android:label="@string/title_upload"
         tools:layout="@layout/fragment_upload" />
 
     <fragment
         android:id="@+id/navigation_download"
-        android:name="com.example.onionshare.ui.dashboard.DownloadFragment"
+        android:name="com.example.onionshare.ui.download.DownloadFragment"
         android:label="@string/title_download"
         tools:layout="@layout/fragment_download" />
 

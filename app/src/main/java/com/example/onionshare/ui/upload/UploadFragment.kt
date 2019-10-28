@@ -1,4 +1,4 @@
-package com.example.onionshare.ui.home
+package com.example.onionshare.ui.upload
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -22,7 +22,7 @@ class UploadFragment : Fragment() {
         uploadViewModel =
             ViewModelProviders.of(this).get(UploadViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_upload, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
+        val textView: TextView = root.findViewById(R.id.text_upload)
         uploadViewModel.text.observe(this, Observer {
             textView.text = it
         })

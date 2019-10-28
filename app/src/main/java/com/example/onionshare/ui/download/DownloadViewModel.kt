@@ -1,4 +1,4 @@
-package com.example.onionshare.ui.dashboard
+package com.example.onionshare.ui.download
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

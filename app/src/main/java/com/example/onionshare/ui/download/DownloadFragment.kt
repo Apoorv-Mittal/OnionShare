@@ -1,4 +1,4 @@
-package com.example.onionshare.ui.dashboard
+package com.example.onionshare.ui.download
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -22,7 +22,7 @@ class DownloadFragment : Fragment() {
         downloadViewModel =
             ViewModelProviders.of(this).get(DownloadViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_download, container, false)
-        val textView: TextView = root.findViewById(R.id.text_dashboard)
+        val textView: TextView = root.findViewById(R.id.text_download)
         downloadViewModel.text.observe(this, Observer {
             textView.text = it
         })
