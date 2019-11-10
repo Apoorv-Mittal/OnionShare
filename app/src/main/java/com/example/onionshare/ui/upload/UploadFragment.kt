@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.example.onionshare.MainActivity
 import com.example.onionshare.R
 
 class UploadFragment : Fragment() {
@@ -26,6 +27,7 @@ class UploadFragment : Fragment() {
         uploadViewModel.text.observe(this, Observer {
             textView.text = it
         })
+        uploadViewModel.change((activity as MainActivity).getUrl())
         return root
     }
 }

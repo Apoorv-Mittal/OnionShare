@@ -9,10 +9,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.onionshare.R
+import android.content.ClipData
+import android.content.ClipboardManager
 
 class DownloadFragment : Fragment() {
 
     private lateinit var downloadViewModel: DownloadViewModel
+    private var myClipboard: ClipboardManager? = null
+    private var myClip: ClipData? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
