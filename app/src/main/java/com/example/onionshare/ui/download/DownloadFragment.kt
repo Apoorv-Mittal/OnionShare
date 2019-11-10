@@ -22,6 +22,7 @@ class DownloadFragment : Fragment() {
         downloadViewModel =
             ViewModelProviders.of(this).get(DownloadViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_download, container, false)
+        /////
         val textView: TextView = root.findViewById(R.id.text_download)
         downloadViewModel.text.observe(this, Observer {
             textView.text = it

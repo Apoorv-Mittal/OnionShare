@@ -1,6 +1,7 @@
 package com.example.onionshare
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -23,11 +24,14 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.UnknownHostException
 import com.example.onionshare.ui.upload.UploadFragment
+import android.widget.Button
+
 
 
 
 
 class MainActivity : AppCompatActivity() {
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         val a = TorTask().execute()
 
         Toast.makeText(applicationContext, a.get(),Toast.LENGTH_LONG).show()
+
 
 
     }
