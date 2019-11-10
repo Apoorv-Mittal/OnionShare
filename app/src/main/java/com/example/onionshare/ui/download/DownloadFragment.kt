@@ -11,6 +11,12 @@ import androidx.lifecycle.ViewModelProviders
 import com.example.onionshare.R
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.widget.Button
+import android.content.Context.CLIPBOARD_SERVICE
+import androidx.core.content.ContextCompat.getSystemService
+import android.content.Context
+
+
 
 class DownloadFragment : Fragment() {
 
@@ -27,9 +33,28 @@ class DownloadFragment : Fragment() {
             ViewModelProviders.of(this).get(DownloadViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_download, container, false)
         val textView: TextView = root.findViewById(R.id.text_download)
-        downloadViewModel.text.observe(this, Observer {
-            textView.text = it
-        })
+
+
+        val pasteButton: Button = root.findViewById(R.id.paste_botton)
+
+        pasteButton.setOnClickListener {
+            val clipboard = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+            try {
+                val text = clipboard!!.primaryClip!!.getItemAt(0).text
+                downloadViewModel.text.observe(this, Observer {
+                    textView.text = text
+                })
+                //Log.i("test", text)
+            } catch (e: Exception) {
+
+            }
+        }
+
+
+
         return root
     }
+
+
+
 }
