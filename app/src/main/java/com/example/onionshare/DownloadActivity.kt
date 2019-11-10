@@ -52,7 +52,7 @@ class DownloadActivity : AppCompatActivity() {
     internal lateinit var urlText: EditText
     internal lateinit var connectButton: Button
     internal lateinit var downloadButton: Button
-    internal lateinit var listViewFiles: ListViewg
+    internal lateinit var listViewFiles: ListView
     internal lateinit var filesList: MutableList<FileClass>
 
     lateinit var file_to_be_downloaded: FileClass
