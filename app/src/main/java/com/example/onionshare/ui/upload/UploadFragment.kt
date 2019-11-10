@@ -18,6 +18,10 @@ import android.content.Context.CLIPBOARD_SERVICE
 import androidx.core.content.ContextCompat.getSystemService
 import android.R.attr.label
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.app.ActivityCompat.startActivityForResult
+import android.content.Intent
+
+
 
 
 
@@ -57,6 +61,17 @@ class UploadFragment : Fragment() {
             }
         }
 
+        val getfiles: Button = root.findViewById(R.id.file_selction_button)
+
+        getfiles.setOnClickListener{
+            val chooseFile: Intent
+            val intent: Intent
+            chooseFile = Intent(Intent.ACTION_GET_CONTENT)
+            chooseFile.addCategory(Intent.CATEGORY_OPENABLE)
+            chooseFile.type = "*/*"
+            intent = Intent.createChooser(chooseFile, "Choose a file")
+            startActivityForResult(intent, 5)
+        }
 
         return root
     }
