@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 class DownloadViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is download Fragment"
+        value = "Onionsite goes here"
     }
     val text: LiveData<String> = _text
 }
