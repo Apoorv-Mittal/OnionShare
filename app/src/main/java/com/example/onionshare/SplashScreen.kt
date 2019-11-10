@@ -17,10 +17,16 @@ import java.io.InputStreamReader
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.UnknownHostException
-
-
-
-
+import java.io.File
+import com.msopentech.thali.toronionproxy.Utilities
+import android.system.Os.accept
+import android.R.attr.port
+import android.content.Context
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import java.io.ObjectInputStream
+import java.net.ServerSocket
 
 
 class SplashScreen : AppCompatActivity() {
@@ -58,11 +64,11 @@ class SplashScreen : AppCompatActivity() {
         private lateinit var i : Intent
 
         override fun doInBackground(vararg strings: String): String {
-            var l: String = ""
-            val fileStorageLocation = "torfiles"
+            val fileStorageLocation = "hiddenservicemanager"
             val onionProxyManager =
                 com.msopentech.thali.android.toronionproxy.AndroidOnionProxyManager(
-                    applicationContext, fileStorageLocation
+                    applicationContext,
+                    fileStorageLocation
                 )
             val totalSecondsPerTorStartup = 4 * 60
             val totalTriesPerTorStartup = 5
@@ -78,44 +84,30 @@ class SplashScreen : AppCompatActivity() {
                     Thread.sleep(90)
                 println("Tor initialized on port " + onionProxyManager.iPv4LocalHostSocksPort)
 
-                val hiddenServicePort = 80
+                val hiddenServicePort = 8080
                 val localPort = 9343
-
                 val onionAddress =
                     onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
-
+                println("Tor onion address of the server is: $onionAddress")
                 i.putExtra("URL", onionAddress)
+                val serverSocket = ServerSocket(localPort)
+                while (true) {
+                    println("Waiting for client request")
+                    val receivedSocket = serverSocket.accept()
+                    val ois = ObjectInputStream(receivedSocket.getInputStream())
+                    val message = ois.readObject() as String
 
-
-                val httpClient = getNewHttpClient()
-                val port = onionProxyManager.iPv4LocalHostSocksPort
-                val socksaddr = InetSocketAddress("127.0.0.1", port)
-                val context = HttpClientContext.create()
-                context.setAttribute("socks.address", socksaddr)
-
-                //http://wikitjerrta4qgz4.onion/
-                //https://api.duckduckgo.com/?q=whats+my+ip&format=json
-                val httpGet = HttpGet("http://wikitjerrta4qgz4.onion/")
-                val httpResponse = httpClient.execute(httpGet, context)
-                val httpEntity = httpResponse.entity
-                val httpResponseStream = httpEntity.content
-
-                val httpResponseReader = BufferedReader(
-                    InputStreamReader(httpResponseStream, "iso-8859-1"), 8
-                )
-
-                for (line in httpResponseReader.lines()) {
-                    l = l.plus(line)
-                    println(line)
+                    //Here we will print the message received from the client to the console.
+                    /*You may want to modify this function to display the received
+                    string in your View.*/
+                    println("Message Received: $message")
                 }
-
-                httpResponseStream.close()
             } catch (e: Exception) {
                 e.printStackTrace()
 
             }
 
-            return l
+            return ""
         }
 
         override fun onPreExecute() {

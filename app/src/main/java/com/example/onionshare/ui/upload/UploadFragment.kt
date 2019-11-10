@@ -28,6 +28,8 @@ import android.content.Intent
 
 
 
+
+
 class UploadFragment : Fragment() {
 
     private lateinit var uploadViewModel: UploadViewModel
@@ -37,6 +39,10 @@ class UploadFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+
+
+
         uploadViewModel =
             ViewModelProviders.of(this).get(UploadViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_upload, container, false)
@@ -68,11 +74,21 @@ class UploadFragment : Fragment() {
             val intent: Intent
             chooseFile = Intent(Intent.ACTION_GET_CONTENT)
             chooseFile.addCategory(Intent.CATEGORY_OPENABLE)
-            chooseFile.type = "*/*"
+            chooseFile.type = "*/ *"
             intent = Intent.createChooser(chooseFile, "Choose a file")
             startActivityForResult(intent, 5)
         }
 
         return root
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode != 0) return
+        val path = ""
+        if (requestCode == 5) {
+            val uri = data?.data
+
+        }
+    }
+
 }
