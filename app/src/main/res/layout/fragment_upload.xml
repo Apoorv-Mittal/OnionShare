@@ -29,12 +29,12 @@
         android:text="@android:string/copy"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintHorizontal_bias="0.153"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.086" />
+        app:layout_constraintVertical_bias="0.069" />
 
-    <EditText
+    <TextView
         android:id="@+id/file_selection"
         android:layout_width="379dp"
         android:layout_height="266dp"
