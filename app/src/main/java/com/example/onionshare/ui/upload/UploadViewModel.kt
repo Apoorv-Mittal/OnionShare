@@ -3,8 +3,6 @@ package com.example.onionshare.ui.upload
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
 
 
 class UploadViewModel : ViewModel() {
