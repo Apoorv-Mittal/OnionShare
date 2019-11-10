@@ -1,16 +1,30 @@
 # OnionShare
 
+
+![Screen 1](/readme-assets/s1.jpg "Screen 1")
+
+Screen 1: Shows the splash screen with the spinner, where our apps connects to TOR network
+
+![Screen 2](/readme-assets/s2.jpg "Screen 2")
+
+Screen 2: Shows the data fetched over the TOR network (shows connectivity) 
+
+![Screen 3](/readme-assets/s3.jpg "Screen 3")
+
+Screen 3: Shows the URL of our apps server over the TOR network in the Upload Fragment with working copy button
+
+![Screen 4](/readme-assets/s4.jpg "Screen 4")
+
+Screen 4: Shows our Download Fragment with a working paste button
+
+
 What is left:
 
-- [ ] Show the connecting to TOR and the spinner
-
 - [ ] On the upload fragment actually be able to upload data
-  - [ ] Show the current server URL and the Button to copy it to the clipboard 
   - [ ] Show the Upload button and all the interactions related to that
   - [ ] After Selection upload to the network
   - [ ] Show all the uploaded files on the TextView
 - [ ] On the download fragment. 
-  - [ ] Show a place to paste the URL
   - [ ] Implement the View Files button to fetch the data from the pasted URL
   - [ ] Show the fetched files in the Text View with a CheckBox 
   - [ ] Implement the Download Button 
