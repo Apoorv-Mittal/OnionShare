@@ -17,17 +17,10 @@ import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import androidx.core.content.ContextCompat.getSystemService
 import android.R.attr.label
+import android.app.Activity
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.app.ActivityCompat.startActivityForResult
 import android.content.Intent
-
-
-
-
-
-
-
-
 
 
 class UploadFragment : Fragment() {
@@ -39,10 +32,6 @@ class UploadFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-
-
-
         uploadViewModel =
             ViewModelProviders.of(this).get(UploadViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_upload, container, false)
@@ -74,7 +63,8 @@ class UploadFragment : Fragment() {
             val intent: Intent
             chooseFile = Intent(Intent.ACTION_GET_CONTENT)
             chooseFile.addCategory(Intent.CATEGORY_OPENABLE)
-            chooseFile.type = "*/ *"
+            chooseFile.type = "*/*"
+            chooseFile.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             intent = Intent.createChooser(chooseFile, "Choose a file")
             startActivityForResult(intent, 5)
         }
@@ -83,11 +73,20 @@ class UploadFragment : Fragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode != 0) return
-        val path = ""
         if (requestCode == 5) {
-            val uri = data?.data
-
+            if (resultCode == Activity.RESULT_OK){
+                if (null != data) {
+                    if (null !=data.clipData) {
+                        for (i in 0 until data.clipData.itemCount) {
+                            val uri = data.clipData.getItemAt(i).uri
+                            print(uri)
+                        }
+                    } else {
+                        val uri = data.data.path
+                        print(uri)
+                    }
+                }
+            }
         }
     }
 
