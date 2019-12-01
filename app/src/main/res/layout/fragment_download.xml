@@ -35,7 +35,7 @@
         android:id="@+id/filesList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonDownload"
+        android:layout_below="@+id/button_connect"
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,12 +43,12 @@
         app:layout_constraintVertical_bias="0.469" />
 
     <Button
-        android:id="@+id/buttonDownload"
+        android:id="@+id/button_connect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="292dp"
 
-        android:text="Download"
+        android:text="Connect"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

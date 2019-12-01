@@ -7,41 +7,15 @@ import android.app.DownloadManager
 import android.content.Context
 import android.widget.Toast
 
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import cz.msebera.android.httpclient.client.HttpClient
-import cz.msebera.android.httpclient.client.methods.HttpGet
-import cz.msebera.android.httpclient.client.protocol.HttpClientContext
-import cz.msebera.android.httpclient.config.RegistryBuilder
-import cz.msebera.android.httpclient.conn.DnsResolver
-import cz.msebera.android.httpclient.conn.socket.ConnectionSocketFactory
-import cz.msebera.android.httpclient.impl.client.HttpClients
-import cz.msebera.android.httpclient.impl.conn.PoolingHttpClientConnectionManager
-import cz.msebera.android.httpclient.ssl.SSLContexts
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.InetAddress
-import java.net.InetSocketAddress
-import java.net.UnknownHostException
-import com.example.onionshare.ui.upload.UploadFragment
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Environment
-import androidx.appcompat.app.AlertDialog
-import android.text.TextUtils
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
-import android.widget.Spinner
 import kotlinx.android.synthetic.main.file_item.view.*
 
 
@@ -63,7 +37,7 @@ class DownloadActivity : AppCompatActivity() {
 
         urlText = findViewById<View>(R.id.urlText) as EditText
         connectButton = findViewById<View>(R.id.buttonConnect) as Button
-        downloadButton = findViewById<View>(R.id.buttonDownload) as Button
+        downloadButton = findViewById<View>(R.id.button_connect) as Button
         listViewFiles = findViewById<View>(R.id.filesList) as ListView
 
         filesList = ArrayList()
