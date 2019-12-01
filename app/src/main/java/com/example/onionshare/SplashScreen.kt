@@ -84,28 +84,21 @@ class SplashScreen : AppCompatActivity() {
                     Thread.sleep(90)
                 println("Tor initialized on port " + onionProxyManager.iPv4LocalHostSocksPort)
 
-                val hiddenServicePort = 8080
+                val hiddenServicePort = 443
                 val localPort = 9343
                 val onionAddress =
                     onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
                 println("Tor onion address of the server is: $onionAddress")
                 i.putExtra("URL", onionAddress)
-                val serverSocket = ServerSocket(localPort)
-                while (true) {
-                    println("Waiting for client request")
-                    val receivedSocket = serverSocket.accept()
-                    val ois = ObjectInputStream(receivedSocket.getInputStream())
-                    val message = ois.readObject() as String
 
-                    //Here we will print the message received from the client to the console.
-                    /*You may want to modify this function to display the received
-                    string in your View.*/
-                    println("Message Received: $message")
-                }
             } catch (e: Exception) {
                 e.printStackTrace()
 
             }
+
+            i.putExtra("Result", "success")
+            startActivity(i)
+            finish()
 
             return ""
         }
@@ -115,10 +108,6 @@ class SplashScreen : AppCompatActivity() {
             i.action = "com.onionshare.main"
         }
 
-        override fun onPostExecute(result: String) {
-            i.putExtra("Result", result)
-            startActivity(i)
-            finish()
-        }
+
     }
 }
