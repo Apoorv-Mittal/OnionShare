@@ -38,18 +38,22 @@ import androidx.appcompat.app.AppCompatActivity
 import cz.msebera.android.httpclient.client.methods.HttpGet
 import cz.msebera.android.httpclient.client.protocol.HttpClientContext
 import cz.msebera.android.httpclient.conn.DnsResolver
+import kotlinx.android.synthetic.main.download_function.*
 import java.io.BufferedReader
 import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.net.InetAddress
 import java.net.UnknownHostException
 
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
 
 class DownloadFragment : Fragment() {
 
     private lateinit var downloadViewModel: DownloadViewModel
-    var port = (activity as MainActivity).get_port()
 
+    var port = 0
 
     private val STORAGE_PERMISSION_CODE: Int = 1000;
 
@@ -67,11 +71,12 @@ class DownloadFragment : Fragment() {
             ViewModelProviders.of(this).get(DownloadViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_download, container, false)
         /////
+       port = (activity as MainActivity).get_port()
 
         val textView: TextView = root.findViewById(R.id.text_download)
         val pasteButton: Button = root.findViewById(R.id.paste_botton)
 
-        val connectButton = root.findViewById(R.id.buttonConnect) as Button  //Button to connect to url
+        val connectButton = root.findViewById(R.id.button_connect) as Button  //Button to connect to url
 
         // List view and array for files, based off firebase project (how they display authors),
         // for displaying list of files
@@ -80,46 +85,11 @@ class DownloadFragment : Fragment() {
         filesList = ArrayList()
 
         connectButton.setOnClickListener {
-            val url = textView.text.toString()   // The pasted url
-
-
-            //val onionAddress = onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
-            val httpClient = getNewHttpClient()
-            val socksaddr = InetSocketAddress("127.0.0.1", port)
-            val httpcontext = HttpClientContext.create()
-            httpcontext.setAttribute("socks.address", socksaddr)
-
-            val httpGet = HttpGet(url)
-            val httpResponse = httpClient.execute(httpGet, httpcontext)
-            val httpEntity = httpResponse.entity
-            val httpResponseStream = httpEntity.content
-
-            // Reading the html of the url to get urls of files using regex?
-            // Not sure if correct implementation, should look more into this after figuring out how html works with url
-            val reader = httpResponseStream.bufferedReader()
-            val iterator = reader.lineSequence().iterator()
-            while (iterator.hasNext()) {
-                var line = iterator.next()
-                val pattern = "/".toRegex()  // Matching all urls with have original url within it?
-                var seperated = line.split("=")
-                for (word in seperated) {
-                    if (pattern.matches(word)) {
-                        var newfile: FileClass
-
-                        val newurl = url+word
-                        val filename = word.removePrefix("/")
-
-                        newfile = FileClass(filename, newurl, false)
-                        filesList.add(newfile)
-
-                    }
-                }
-                // adapter for displaying files, based off of firebase project (how they display authors)
-                val fileAdapter = FileList(getActivity()!!, filesList)
-                listViewFiles.adapter = fileAdapter
-
-            }
+            connecttask().execute(Pair(textView.text.toString(), filesList)).get()
+            val fileAdapter = FileList(getActivity()!!, filesList)
+            listViewFiles.adapter = fileAdapter
         }
+
 
         // Clicking on fileitem on displayed list of files
         listViewFiles.onItemClickListener =
@@ -187,13 +157,42 @@ class DownloadFragment : Fragment() {
             .build()
     }
 
+
+    private inner class connecttask(): AsyncTask<Pair<String,MutableList<FileClass>>,Void, String>(){
+        override fun doInBackground(vararg url: Pair<String,MutableList<FileClass>>?): String? {
+            //val onionAddress = onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
+            val httpClient = getNewHttpClient()
+            val socksaddr = InetSocketAddress("127.0.0.1", port)
+            val httpcontext = HttpClientContext.create()
+            httpcontext.setAttribute("socks.address", socksaddr)
+
+            val tor_url = url[0]!!.first
+            var list = url[0]!!.second
+
+            val httpGet = HttpGet(tor_url)
+            val httpResponse = httpClient.execute(httpGet, httpcontext)
+            val httpEntity = httpResponse.entity
+            val httpResponseStream = httpEntity.content
+
+            // Reading the html of the url to get urls of files using regex?
+            // Not sure if correct implementation, should look more into this after figuring out how html works with url
+            val doc = Jsoup.parse(httpResponseStream,null,tor_url)
+
+            doc.select("a").forEach { e ->
+                   var filename = e.attr("href")
+                   var url = e.attr("abs:href")
+                   list.add(FileClass(filename,url,false))
+            }
+
+            return ""
+        }
+    }
+
+
     // Download task
     private inner class downloadtask(): AsyncTask<FileClass,Void,String>(){
 
         override fun doInBackground(vararg p0: FileClass?): String {
-
-
-
             // val onionAddress = onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
             val httpClient = getNewHttpClient()
             val socksaddr = InetSocketAddress("127.0.0.1", port)
@@ -212,12 +211,14 @@ class DownloadFragment : Fragment() {
             // path using getExternalStorageDirectory
             val bytes = httpResponseStream.readBytes()
 
-            val path = Environment.getExternalStorageDirectory().toString()
+            //val path = Environment.getExternalStorageDirectory().toString()
+            val path2 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
             val downloadFile: File
-            downloadFile = File(path, thisFile?.filename)
+            downloadFile = File(path2, thisFile?.filename)
             downloadFile.writeBytes(bytes)
             httpResponseStream.close()
-            view?.status?.setVisibility(View.VISIBLE)  //Sets "Downloaded" text to visible of file_list item
+            //view?.status?.setVisibility(View.VISIBLE)  //Sets "Downloaded" text to visible of file_list item
             Toast.makeText(getActivity()?.applicationContext, "File downloaded",Toast.LENGTH_LONG).show()
 
             return ""

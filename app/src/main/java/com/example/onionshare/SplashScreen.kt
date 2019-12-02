@@ -94,7 +94,7 @@ class SplashScreen : AppCompatActivity() {
                 val onionAddress =
                     onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
                 println("Tor onion address of the server is: $onionAddress")
-                i.putExtra("URL", onionAddress)
+                i.putExtra("URL", "http://" + onionAddress + ":" + hiddenServicePort.toString())
 
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -131,6 +131,15 @@ class UploadFragment : Fragment() {
         os.write(responseText.toByteArray())
         os.close()
     }
+    /*
+    private fun sendFile(httpExchange: HttpExchange, uri: Uri?){
+        //get file bytes
+        httpExchange.sendResponseHeaders(200, responseText.length.toLong())
+        val os = httpExchange.responseBody
+        os.write(responseText.toByteArray())
+        os.close()
+    }
+*/
 
     private var mHttpServer: HttpServer? = null
 
@@ -164,11 +173,11 @@ class UploadFragment : Fragment() {
                         "/" -> {
                             //selected.joinToString(prefix = "<li><a href=\"yeet.html\">",  separator = "\n", postfix = "</a></li>") +
                             var ret = ""
-                            selected.keys.forEach { elm -> ret += "\n<li><a href=\"\\$elm\">$elm</a></li>" }
+                            selected.keys.forEach { elm -> ret += "\n<li><a href=\"/$elm\">$elm</a></li>" }
                             sendResponse(exchange, "$HEADER<ul>\n$ret</ul>$FOOTER")
                             return@run
                         } else -> {
-                            if(selected.contains(exchange.requestURI.path)){
+                            if(selected.keys.contains(exchange.requestURI.path)){
                                 sendResponse(exchange, "success!\n")
                                 return@run
                             }
@@ -179,6 +188,7 @@ class UploadFragment : Fragment() {
             }
         }
     }
+
 
     private val messageHandler = HttpHandler { httpExchange ->
         run {
@@ -201,6 +211,18 @@ class UploadFragment : Fragment() {
         }
     }
 
+    fun getImageFilePath(context:Context?, uri: Uri?): String{
+        var cursor: Cursor? = context!!.getContentResolver().query(uri, null, null, null, null)
+        cursor!!.moveToFirst();
+        var image_id = cursor.getString(0);
+        image_id = image_id.substring(image_id.lastIndexOf(":") + 1);
+        cursor.close();
+        cursor = context.getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", arrayOf(image_id), null);
+        cursor.moveToFirst();
+        val path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        cursor.close();
+        return path.split("/").last().replace("\\","/")
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 5) {
@@ -210,11 +232,11 @@ class UploadFragment : Fragment() {
                         for (i in 0 until data.clipData.itemCount) {
                             val uri = data.clipData.getItemAt(i).uri
 
-                            selected.put(uri.lastPathSegment, uri)
+                            selected.put("/" + getImageFilePath(getActivity()?.applicationContext , uri), uri)
                         }
                     } else {
                         val uri = data.data
-                        selected.put(uri.toString(),uri)
+                        selected.put("/" + getImageFilePath(getActivity()?.applicationContext , uri), uri)
                     }
                 }
             }
