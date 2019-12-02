@@ -54,10 +54,6 @@ class DownloadFragment : Fragment() {
     private var myClipboard: ClipboardManager? = null
     private var myClip: ClipData? = null
 
-
-    lateinit var file_to_be_downloaded: FileClass  //File to be downloaded when listview item is clicked
-                                                    // so that the async task knows which file to be downloaded
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -87,7 +83,7 @@ class DownloadFragment : Fragment() {
 
             val onionProxyManager =
                 com.msopentech.thali.android.toronionproxy.AndroidOnionProxyManager(
-                    applicationContext, "torfiles"
+                    getActivity()?.applicationContext, "torfiles"
                 )
 
             //val onionAddress = onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
@@ -108,14 +104,16 @@ class DownloadFragment : Fragment() {
             val iterator = reader.lineSequence().iterator()
             while (iterator.hasNext()) {
                 var line = iterator.next()
-                val pattern = url.toRegex()  // Matching all urls with have original url within it?
-                var seperated = line.split("<", ">", " ")
+                val pattern = "/".toRegex()  // Matching all urls with have original url within it?
+                var seperated = line.split("=")
                 for (word in seperated) {
                     if (pattern.matches(word)) {
                         var newfile: FileClass
-                        // Right now name of file is also set to url, not sure yet what to match to get
-                        // actual file name
-                        newfile = FileClass(word, word, false)
+
+                        val newurl = url+word
+                        val filename = word.removePrefix("/")
+
+                        newfile = FileClass(filename, newurl, false)
                         filesList.add(newfile)
 
                     }
@@ -130,12 +128,12 @@ class DownloadFragment : Fragment() {
         // Clicking on fileitem on displayed list of files
         listViewFiles.onItemClickListener =
             AdapterView.OnItemClickListener { adapterView, view, i, l ->
-                file_to_be_downloaded = filesList[i]  // Sets filetobedownloaded to clicked file so async task knows
-                                                        // which file to download
-                val file_url = file_to_be_downloaded.fileurl
+                val file_item = filesList[i]
+
+                val file_url = file_item.fileurl
 
                 // Permissions
-                if (file_to_be_downloaded.downloaded == false) {   // If file hasn't been downloaded yet
+                if (file_item.downloaded == false) {   // If file hasn't been downloaded yet
                                                                     // All FileClass items initiated with
                                                                     // downloaded = false
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
@@ -152,12 +150,12 @@ class DownloadFragment : Fragment() {
                     } else {
                         // execute async task to download file
                         val task = downloadtask()
-                        task.execute()
+                        task.execute(file_item)
                         filesList[i].downloaded = true  //Set downloaded status = true
 
                     }
                 } else {
-                    Toast.makeText(applicationContext, "File already downloaded",Toast.LENGTH_LONG).show()
+                    Toast.makeText(getActivity()?.applicationContext, "File already downloaded",Toast.LENGTH_LONG).show()
 
                 }
 
@@ -194,15 +192,16 @@ class DownloadFragment : Fragment() {
     }
 
     // Download task
-    private inner class downloadtask(): AsyncTask<Void,Void,String>(){
-        override fun doInBackground(vararg p0: Void?): String {
+    private inner class downloadtask(): AsyncTask<FileClass,Void,String>(){
+
+        override fun doInBackground(vararg p0: FileClass?): String {
 
             val hiddenServicePort = 80
             val localPort = 9343
 
             val onionProxyManager =
                 com.msopentech.thali.android.toronionproxy.AndroidOnionProxyManager(
-                    applicationContext, "torfiles"
+                    getActivity()?.applicationContext, "torfiles"
                 )
 
             // val onionAddress = onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
@@ -212,12 +211,10 @@ class DownloadFragment : Fragment() {
             val context = HttpClientContext.create()
             context.setAttribute("socks.address", socksaddr)
 
-            // One problem i can see is if user presses two items, file_to_be_downloaded might change
-            // into wrong url since its global. Will look into seeing how to put in parameters to
-            // async tasks later
-            val url = file_to_be_downloaded.fileurl
 
-            val httpGet = HttpGet(url)
+            val thisFile = p0[0]
+
+            val httpGet = HttpGet(thisFile?.fileurl)
             val httpResponse = httpClient.execute(httpGet, context)
             val httpEntity = httpResponse.entity
             val httpResponseStream = httpEntity.content
@@ -228,11 +225,11 @@ class DownloadFragment : Fragment() {
 
             val path = Environment.getExternalStorageDirectory().toString()
             val downloadFile: File
-            downloadFile = File(path, file_to_be_downloaded.filename)
+            downloadFile = File(path, thisFile?.filename)
             downloadFile.writeBytes(bytes)
             httpResponseStream.close()
             view?.status?.setVisibility(View.VISIBLE)  //Sets "Downloaded" text to visible of file_list item
-            Toast.makeText(applicationContext, "File downloaded",Toast.LENGTH_LONG).show()
+            Toast.makeText(getActivity()?.applicationContext, "File downloaded",Toast.LENGTH_LONG).show()
 
             return ""
         }
@@ -250,6 +247,8 @@ class DownloadFragment : Fragment() {
         }
 
     }
+
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
