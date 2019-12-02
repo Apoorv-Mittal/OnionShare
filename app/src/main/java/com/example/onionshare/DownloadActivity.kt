@@ -58,6 +58,7 @@ class DownloadActivity : AppCompatActivity() {
                         requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_PERMISSION_CODE)
                     }
                     else {
+                        view.progressBar.setVisibility(View.VISIBLE)
                         downloadFile(file_to_be_downloaded)
                         view.status.setVisibility(View.VISIBLE)
                         file_to_be_downloaded.downloaded = true

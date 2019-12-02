@@ -31,6 +31,8 @@ import java.net.ServerSocket
 
 class SplashScreen : AppCompatActivity() {
 
+    private var _port = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.loading_screen)
@@ -62,6 +64,7 @@ class SplashScreen : AppCompatActivity() {
     private inner class TorTask : android.os.AsyncTask<String, Int, String>() {
 
         private lateinit var i : Intent
+
 
         override fun doInBackground(vararg strings: String): String {
             val fileStorageLocation = "hiddenservicemanager"
@@ -111,5 +114,9 @@ class SplashScreen : AppCompatActivity() {
         }
 
 
+    }
+
+    fun get_port(): Int {
+        return _port
     }
 }
