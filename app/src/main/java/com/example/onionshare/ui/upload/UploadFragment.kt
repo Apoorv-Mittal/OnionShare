@@ -1,5 +1,6 @@
 package com.example.onionshare.ui.upload
 
+import android.R.attr.defaultFocusHighlightEnabled
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,16 +18,45 @@ import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import androidx.core.content.ContextCompat.getSystemService
 import android.R.attr.label
+import android.app.Activity
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.app.ActivityCompat.startActivityForResult
+import android.content.Intent
+import android.database.Cursor
+import android.net.Uri
+import android.provider.MediaStore
+import android.provider.OpenableColumns
+import android.util.Log
 
+import android.view.Menu
+import androidx.core.net.toFile
 
+import com.sun.net.httpserver.*
 
-
-
+import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONObject
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import java.net.InetSocketAddress
+import java.net.URI
+import java.util.*
+import java.util.concurrent.Executors
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class UploadFragment : Fragment() {
 
     private lateinit var uploadViewModel: UploadViewModel
+    private var serverUp = false
+
+    private var selected: HashMap<String, Uri> = HashMap<String,Uri>()
+    private val HEADER = "<!DOCTYPE html>\n" +
+            "<html>\n" +
+            "  <body>\n"
+
+    private val FOOTER = "  </body>\n" +
+            "</html>"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,7 +87,140 @@ class UploadFragment : Fragment() {
             }
         }
 
+        val getfiles: Button = root.findViewById(R.id.file_selction_button)
+
+        getfiles.setOnClickListener{
+            val chooseFile: Intent
+            val intent: Intent
+            chooseFile = Intent(Intent.ACTION_GET_CONTENT)
+            chooseFile.addCategory(Intent.CATEGORY_OPENABLE)
+            chooseFile.type = "*/*"
+            chooseFile.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            intent = Intent.createChooser(chooseFile, "Choose a file")
+            startActivityForResult(intent, 5)
+
+        }
+
+
+        //create server thread
+
+        val port = 9343
+
+        if(!serverUp){
+            startServer(port)
+            true
+        } else{
+            stopServer()
+            false
+        }
+
+
 
         return root
     }
+
+
+    private fun streamToString(inputStream: InputStream): String {
+        val s = Scanner(inputStream).useDelimiter("\\A")
+        return if (s.hasNext()) s.next() else ""
+    }
+
+    private fun sendResponse(httpExchange: HttpExchange, responseText: String){
+        httpExchange.sendResponseHeaders(200, responseText.length.toLong())
+        val os = httpExchange.responseBody
+        os.write(responseText.toByteArray())
+        os.close()
+    }
+
+    private var mHttpServer: HttpServer? = null
+
+    private fun startServer(port: Int) {
+        try {
+            mHttpServer = HttpServer.create(InetSocketAddress(port), 0)
+            mHttpServer!!.executor = Executors.newCachedThreadPool()
+
+            mHttpServer!!.createContext("/", rootHandler)
+            mHttpServer!!.start()//startServer server;
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun stopServer() {
+        if (mHttpServer != null){
+            mHttpServer!!.stop(0)
+        }
+    }
+
+    // Handler for root endpoint
+    private val rootHandler = HttpHandler { exchange ->
+        run {
+            // Get request method
+            when (exchange!!.requestMethod) {
+                "GET" -> {
+                    when(exchange.requestURI.path){
+                        "/" -> {
+                            //selected.joinToString(prefix = "<li><a href=\"yeet.html\">",  separator = "\n", postfix = "</a></li>") +
+                            var ret = ""
+                            selected.keys.forEach { elm -> ret += "\n<li><a href=\"\\$elm\">$elm</a></li>" }
+                            sendResponse(exchange, "$HEADER<ul>\n$ret</ul>$FOOTER")
+                            return@run
+                        } else -> {
+                            if(selected.contains(exchange.requestURI.path)){
+                                sendResponse(exchange, "success!\n")
+                                return@run
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    private val messageHandler = HttpHandler { httpExchange ->
+        run {
+            when (httpExchange!!.requestMethod) {
+                "GET" -> {
+                    // Get all messages
+                    sendResponse(httpExchange, "Would be all messages stringified json")
+                }
+                "POST" -> {
+                    val inputStream = httpExchange.requestBody
+
+                    val requestBody = streamToString(inputStream)
+                    val jsonBody = JSONObject(requestBody)
+                    // save message to database
+
+                    //for testing
+                    sendResponse(httpExchange, jsonBody.toString())
+                }
+            }
+        }
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 5) {
+            if (resultCode == Activity.RESULT_OK){
+                if (null != data) {
+                    if (null !=data.clipData) {
+                        for (i in 0 until data.clipData.itemCount) {
+                            val uri = data.clipData.getItemAt(i).uri
+
+                            selected.put(uri.lastPathSegment, uri)
+                        }
+                    } else {
+                        val uri = data.data
+                        selected.put(uri.toString(),uri)
+                    }
+                }
+            }
+        }
+    }
+
+
+
 }
