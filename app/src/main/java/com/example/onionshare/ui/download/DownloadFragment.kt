@@ -48,6 +48,8 @@ import java.net.UnknownHostException
 class DownloadFragment : Fragment() {
 
     private lateinit var downloadViewModel: DownloadViewModel
+    var port = (activity as MainActivity).get_port()
+
 
     private val STORAGE_PERMISSION_CODE: Int = 1000;
 
@@ -59,6 +61,8 @@ class DownloadFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+
         downloadViewModel =
             ViewModelProviders.of(this).get(DownloadViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_download, container, false)
@@ -78,17 +82,9 @@ class DownloadFragment : Fragment() {
         connectButton.setOnClickListener {
             val url = textView.text.toString()   // The pasted url
 
-            val hiddenServicePort = 80
-            val localPort = 9343
-
-            val onionProxyManager =
-                com.msopentech.thali.android.toronionproxy.AndroidOnionProxyManager(
-                    getActivity()?.applicationContext, "torfiles"
-                )
 
             //val onionAddress = onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
             val httpClient = getNewHttpClient()
-            val port = onionProxyManager.iPv4LocalHostSocksPort
             val socksaddr = InetSocketAddress("127.0.0.1", port)
             val httpcontext = HttpClientContext.create()
             httpcontext.setAttribute("socks.address", socksaddr)
@@ -196,17 +192,10 @@ class DownloadFragment : Fragment() {
 
         override fun doInBackground(vararg p0: FileClass?): String {
 
-            val hiddenServicePort = 80
-            val localPort = 9343
 
-            val onionProxyManager =
-                com.msopentech.thali.android.toronionproxy.AndroidOnionProxyManager(
-                    getActivity()?.applicationContext, "torfiles"
-                )
 
             // val onionAddress = onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
             val httpClient = getNewHttpClient()
-            val port = onionProxyManager.iPv4LocalHostSocksPort
             val socksaddr = InetSocketAddress("127.0.0.1", port)
             val context = HttpClientContext.create()
             context.setAttribute("socks.address", socksaddr)

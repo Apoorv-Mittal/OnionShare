@@ -9,12 +9,13 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-
+import com.msopentech.thali.android.toronionproxy.AndroidOnionProxyManager
 
 
 class MainActivity : AppCompatActivity() {
 
     private var URL = ""
+    private var port = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +36,8 @@ class MainActivity : AppCompatActivity() {
 
         URL = intent.getStringExtra("URL")
 
+        port = intent.getIntExtra("port", -1)
+
         val a = intent.getStringExtra("Result")
 
 
@@ -44,5 +47,10 @@ class MainActivity : AppCompatActivity() {
     fun getUrl(): String {
         return URL
     }
+
+    fun get_port(): Int {
+        return port
+    }
+
 
 }

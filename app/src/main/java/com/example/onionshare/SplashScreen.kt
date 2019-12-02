@@ -25,6 +25,8 @@ import java.net.UnknownHostException
 
 class SplashScreen : AppCompatActivity() {
 
+    private var _port = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.loading_screen)
@@ -56,6 +58,7 @@ class SplashScreen : AppCompatActivity() {
     private inner class TorTask : android.os.AsyncTask<String, Int, String>() {
 
         private lateinit var i : Intent
+
 
         override fun doInBackground(vararg strings: String): String {
             var l: String = ""
@@ -89,6 +92,8 @@ class SplashScreen : AppCompatActivity() {
 
                 val httpClient = getNewHttpClient()
                 val port = onionProxyManager.iPv4LocalHostSocksPort
+                _port = port
+                i.putExtra("port",_port)
                 val socksaddr = InetSocketAddress("127.0.0.1", port)
                 val context = HttpClientContext.create()
                 context.setAttribute("socks.address", socksaddr)
@@ -131,5 +136,13 @@ class SplashScreen : AppCompatActivity() {
             startActivity(i)
             finish()
         }
+
+
+
+
+    }
+
+    fun get_port(): Int {
+        return _port
     }
 }
