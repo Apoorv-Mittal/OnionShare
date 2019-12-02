@@ -70,7 +70,7 @@ class SplashScreen : AppCompatActivity() {
                     applicationContext,
                     fileStorageLocation
                 )
-            val totalSecondsPerTorStartup = 4 * 60
+            val totalSecondsPerTorStartup = 60
             val totalTriesPerTorStartup = 5
             try {
                 val ok = onionProxyManager.startWithRepeat(

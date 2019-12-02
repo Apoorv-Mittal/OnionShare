@@ -22,25 +22,41 @@ import android.app.Activity
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.app.ActivityCompat.startActivityForResult
 import android.content.Intent
+import android.database.Cursor
+import android.net.Uri
+import android.provider.MediaStore
+import android.provider.OpenableColumns
+import android.util.Log
 
 import android.view.Menu
+import androidx.core.net.toFile
 
 import com.sun.net.httpserver.*
 
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
+import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.net.InetSocketAddress
+import java.net.URI
 import java.util.*
 import java.util.concurrent.Executors
-
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class UploadFragment : Fragment() {
 
     private lateinit var uploadViewModel: UploadViewModel
     private var serverUp = false
 
+    private var selected: HashMap<String, Uri> = HashMap<String,Uri>()
+    private val HEADER = "<!DOCTYPE html>\n" +
+            "<html>\n" +
+            "  <body>\n"
+
+    private val FOOTER = "  </body>\n" +
+            "</html>"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -82,6 +98,7 @@ class UploadFragment : Fragment() {
             chooseFile.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             intent = Intent.createChooser(chooseFile, "Choose a file")
             startActivityForResult(intent, 5)
+
         }
 
 
@@ -101,6 +118,7 @@ class UploadFragment : Fragment() {
 
         return root
     }
+
 
     private fun streamToString(inputStream: InputStream): String {
         val s = Scanner(inputStream).useDelimiter("\\A")
@@ -122,9 +140,6 @@ class UploadFragment : Fragment() {
             mHttpServer!!.executor = Executors.newCachedThreadPool()
 
             mHttpServer!!.createContext("/", rootHandler)
-            mHttpServer!!.createContext("/index", rootHandler)
-            // Handle /messages endpoint
-            mHttpServer!!.createContext("/messages", messageHandler)
             mHttpServer!!.start()//startServer server;
 
         } catch (e: IOException) {
@@ -145,7 +160,21 @@ class UploadFragment : Fragment() {
             // Get request method
             when (exchange!!.requestMethod) {
                 "GET" -> {
-                    sendResponse(exchange, "Welcome to my server")
+                    when(exchange.requestURI.path){
+                        "/" -> {
+                            //selected.joinToString(prefix = "<li><a href=\"yeet.html\">",  separator = "\n", postfix = "</a></li>") +
+                            var ret = ""
+                            selected.keys.forEach { elm -> ret += "\n<li><a href=\"\\$elm\">$elm</a></li>" }
+                            sendResponse(exchange, "$HEADER<ul>\n$ret</ul>$FOOTER")
+                            return@run
+                        } else -> {
+                            if(selected.contains(exchange.requestURI.path)){
+                                sendResponse(exchange, "success!\n")
+                                return@run
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -172,6 +201,7 @@ class UploadFragment : Fragment() {
         }
     }
 
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 5) {
             if (resultCode == Activity.RESULT_OK){
@@ -179,15 +209,18 @@ class UploadFragment : Fragment() {
                     if (null !=data.clipData) {
                         for (i in 0 until data.clipData.itemCount) {
                             val uri = data.clipData.getItemAt(i).uri
-                            print(uri)
+
+                            selected.put(uri.lastPathSegment, uri)
                         }
                     } else {
-                        val uri = data.data.path
-                        print(uri)
+                        val uri = data.data
+                        selected.put(uri.toString(),uri)
                     }
                 }
             }
         }
     }
+
+
 
 }
