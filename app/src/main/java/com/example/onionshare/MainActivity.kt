@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         return URL
     }
 
-    fun getPort(): Int{
+    fun get_port(): Int{
         return port
     }
 

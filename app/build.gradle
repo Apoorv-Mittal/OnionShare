@@ -31,6 +31,7 @@ android {
 }
 
 dependencies {
+    compile 'org.jsoup:jsoup:1.10.3'
     implementation 'com.github.jehy:Tor-Onion-Proxy-Library:0.0.7'
     implementation "cz.msebera.android:httpclient:4.4.1.2"
     implementation fileTree(dir: 'libs', include: ['*.jar'])
