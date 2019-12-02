@@ -84,6 +84,8 @@ class SplashScreen : AppCompatActivity() {
                     Thread.sleep(90)
                 println("Tor initialized on port " + onionProxyManager.iPv4LocalHostSocksPort)
 
+                i.putExtra("port",onionProxyManager.iPv4LocalHostSocksPort)
+
                 val hiddenServicePort = 443
                 val localPort = 9343
                 val onionAddress =
