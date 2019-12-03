@@ -227,6 +227,33 @@ class UploadFragment : Fragment() {
         return path.split("/").last().replace("\\","/")
     }
 
+    private fun getFileName(context:Context? ,uri: Uri?): String {
+        var result = ""
+
+        if (uri?.getScheme().equals("content")) {
+            var cursor: Cursor? = context!!.getContentResolver().query(uri, null, null, null, null)
+            try {
+                if (cursor!=null && cursor!!.moveToFirst()){
+                    result = cursor!!.getString(cursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                }
+            }finally {
+                cursor!!.close()
+            }
+        }
+
+        if(result == ""){
+            result = uri!!.path
+            val cut = result.lastIndexOf('/')
+
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+
+        return Base64.getUrlEncoder().encodeToString(result.toByteArray())
+    }
+
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == FILE_CHOOSER) {
             if (resultCode == Activity.RESULT_OK){
@@ -235,13 +262,13 @@ class UploadFragment : Fragment() {
                         for (i in 0 until data.clipData.itemCount) {
                             val uri = data.clipData.getItemAt(i).uri
 
-                            selected.put("/" + getImageFilePath(getActivity()?.applicationContext , uri), uri)
+                            selected.put("/" + getFileName(getActivity()?.applicationContext,uri) , uri)
                             Toast.makeText(getActivity()?.applicationContext, "Filename put into map",
                                 Toast.LENGTH_LONG).show()
                         }
                     } else {
                         val uri = data.data
-                        selected.put("/" + getImageFilePath(getActivity()?.applicationContext , uri), uri)
+                        selected.put("/" + getFileName(getActivity()?.applicationContext,uri) , uri)
                         Toast.makeText(getActivity()?.applicationContext, "Filename put into map",
                             Toast.LENGTH_LONG).show()
                     }

@@ -15,6 +15,7 @@ import android.content.pm.PackageManager
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Environment
+import android.util.Base64
 import android.widget.*
 import androidx.core.content.ContextCompat
 import com.example.onionshare.*
@@ -160,7 +161,7 @@ class DownloadFragment : Fragment() {
             doc.select("a").forEach { e ->
                    var filename = e.attr("href")
                    var url = e.attr("abs:href")
-                   list.add(FileClass(filename,url,false))
+                   list.add(FileClass(String(Base64.decode(filename.substring(1),Base64.DEFAULT)),url,false))
             }
 
             return ""
@@ -181,7 +182,7 @@ class DownloadFragment : Fragment() {
 
             val thisFile = p0[0]
 
-            val httpGet = HttpGet(thisFile?.fileurl)
+            val httpGet = HttpGet( thisFile?.fileurl)
             val httpResponse = httpClient.execute(httpGet, context)
             val httpEntity = httpResponse.entity
             val httpResponseStream = httpEntity.content
