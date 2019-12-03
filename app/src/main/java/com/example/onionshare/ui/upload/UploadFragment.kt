@@ -208,16 +208,6 @@ class UploadFragment : Fragment() {
                     // Get all messages
                     sendResponse(httpExchange, "Would be all messages stringified json")
                 }
-                "POST" -> {
-                    val inputStream = httpExchange.requestBody
-
-                    val requestBody = streamToString(inputStream)
-                    val jsonBody = JSONObject(requestBody)
-                    // save message to database
-
-                    //for testing
-                    sendResponse(httpExchange, jsonBody.toString())
-                }
             }
         }
     }
