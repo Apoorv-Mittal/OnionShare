@@ -71,7 +71,7 @@ class DownloadFragment : Fragment() {
             ViewModelProviders.of(this).get(DownloadViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_download, container, false)
         /////
-       port = (activity as MainActivity).get_port()
+        port = (activity as MainActivity).get_port()
 
         val textView: TextView = root.findViewById(R.id.text_download)
         val pasteButton: Button = root.findViewById(R.id.paste_botton)
@@ -161,6 +161,7 @@ class DownloadFragment : Fragment() {
     private inner class connecttask(): AsyncTask<Pair<String,MutableList<FileClass>>,Void, String>(){
         override fun doInBackground(vararg url: Pair<String,MutableList<FileClass>>?): String? {
             //val onionAddress = onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
+            port = (activity as MainActivity).get_port()
             val httpClient = getNewHttpClient()
             val socksaddr = InetSocketAddress("127.0.0.1", port)
             val httpcontext = HttpClientContext.create()
@@ -219,7 +220,7 @@ class DownloadFragment : Fragment() {
             downloadFile.writeBytes(bytes)
             httpResponseStream.close()
             //view?.status?.setVisibility(View.VISIBLE)  //Sets "Downloaded" text to visible of file_list item
-            Toast.makeText(getActivity()?.applicationContext, "File downloaded",Toast.LENGTH_LONG).show()
+
 
             return ""
         }
@@ -230,6 +231,7 @@ class DownloadFragment : Fragment() {
 
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
+            Toast.makeText(getActivity()?.applicationContext, "File downloaded",Toast.LENGTH_LONG).show()
         }
 
         override fun onProgressUpdate(vararg values: Void?) {
