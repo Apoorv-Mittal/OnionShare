@@ -1,8 +1,6 @@
 package com.example.onionshare.ui.download
 
 import android.Manifest
-import android.app.DownloadManager
-import android.app.ProgressDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +10,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context.CLIPBOARD_SERVICE
-import androidx.core.content.ContextCompat.getSystemService
 import android.content.Context
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Environment
@@ -29,34 +24,19 @@ import cz.msebera.android.httpclient.conn.socket.ConnectionSocketFactory
 import cz.msebera.android.httpclient.impl.client.HttpClients
 import cz.msebera.android.httpclient.impl.conn.PoolingHttpClientConnectionManager
 import cz.msebera.android.httpclient.ssl.SSLContexts
-import kotlinx.android.synthetic.main.file_item.view.*
 import java.io.File
 import java.net.InetSocketAddress
-
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import cz.msebera.android.httpclient.client.methods.HttpGet
 import cz.msebera.android.httpclient.client.protocol.HttpClientContext
-import cz.msebera.android.httpclient.conn.DnsResolver
-import kotlinx.android.synthetic.main.download_function.*
-import java.io.BufferedReader
-import java.io.FileOutputStream
-import java.io.InputStreamReader
-import java.net.InetAddress
-import java.net.UnknownHostException
 
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
-import org.jsoup.select.Elements
 
 class DownloadFragment : Fragment() {
 
     private lateinit var downloadViewModel: DownloadViewModel
 
     var port = 0
-
-    private val STORAGE_PERMISSION_CODE: Int = 1000;
-
+    
     private var myClipboard: ClipboardManager? = null
     private var myClip: ClipData? = null
 
@@ -109,10 +89,8 @@ class DownloadFragment : Fragment() {
                         ) !=
                         PackageManager.PERMISSION_GRANTED
                     ) {
-                        requestPermissions(
-                            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                            STORAGE_PERMISSION_CODE
-                        )
+                        Toast.makeText(getActivity()?.applicationContext, "Permission to write not granted",Toast.LENGTH_LONG).show()
+
                     } else {
                         // execute async task to download file
                         val task = downloadtask()
@@ -239,32 +217,6 @@ class DownloadFragment : Fragment() {
         }
 
     }
-
-
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when(requestCode){
-            STORAGE_PERMISSION_CODE ->{
-                if (grantResults.isNotEmpty() && grantResults[0] ==
-                    PackageManager.PERMISSION_GRANTED){
-                    val task = downloadtask()
-                    task.execute()
-                }
-                else{
-                    Toast.makeText(context!!, "Permission Denied", Toast.LENGTH_LONG).show()
-
-                }
-            }
-        }
-    }
-
-
-
 
 
 }
