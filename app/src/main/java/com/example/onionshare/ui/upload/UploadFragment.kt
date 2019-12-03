@@ -18,6 +18,7 @@ import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import androidx.core.content.ContextCompat.getSystemService
 import android.app.Activity
+import android.app.Application
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.app.ActivityCompat.startActivityForResult
 import android.content.Intent
@@ -138,11 +139,11 @@ class UploadFragment : Fragment() {
         os.close()
     }
 
-    private fun sendFile(httpExchange: HttpExchange, uri: Uri?){
+    private fun sendFile(context: Context?,httpExchange: HttpExchange, uri: Uri?){
         //get file bytes
 
-        var f = File(uri!!.path)
-        val responseText = f.readBytes()
+        var responseText = context!!.contentResolver.openInputStream(uri).readBytes()
+
 
         httpExchange.sendResponseHeaders(200, responseText.size.toLong())
         val os = httpExchange.responseBody
@@ -189,7 +190,8 @@ class UploadFragment : Fragment() {
                         } else -> {
                             if(selected.keys.contains(exchange.requestURI.path)){
                                 //sendResponse(exchange, "$HEADER<ul><li>hii</li><ul>$FOOTER")
-                                sendFile(exchange, selected.get(exchange.requestURI.path))
+
+                                sendFile(activity?.applicationContext,exchange, selected.get(exchange.requestURI.path))
                                 return@run
                             }
                         }
