@@ -1,6 +1,5 @@
 package com.example.onionshare.ui.upload
 
-import android.R.attr.*
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,37 +12,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.onionshare.MainActivity
 import com.example.onionshare.R
-import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context.CLIPBOARD_SERVICE
-import androidx.core.content.ContextCompat.getSystemService
 import android.app.Activity
-import android.app.Application
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.app.ActivityCompat.startActivityForResult
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
-import android.provider.OpenableColumns
-import android.util.Log
-
-import android.view.Menu
 import android.widget.Toast
-import androidx.core.net.toFile
 
 import com.sun.net.httpserver.*
-
-import kotlinx.android.synthetic.main.activity_main.*
-import org.json.JSONObject
-import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.net.InetSocketAddress
-import java.net.URI
 import java.util.*
 import java.util.concurrent.Executors
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class UploadFragment : Fragment() {
