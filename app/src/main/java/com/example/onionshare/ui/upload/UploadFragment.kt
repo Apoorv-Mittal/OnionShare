@@ -1,6 +1,6 @@
 package com.example.onionshare.ui.upload
 
-import android.R.attr.defaultFocusHighlightEnabled
+import android.R.attr.*
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,7 +17,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import androidx.core.content.ContextCompat.getSystemService
-import android.R.attr.label
 import android.app.Activity
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.app.ActivityCompat.startActivityForResult
@@ -49,15 +48,22 @@ import kotlin.collections.HashMap
 class UploadFragment : Fragment() {
 
     private lateinit var uploadViewModel: UploadViewModel
-    private var serverUp = false
 
-    private var selected: HashMap<String, Uri> = HashMap<String,Uri>()
-    private val HEADER = "<!DOCTYPE html>\n" +
-            "<html>\n" +
-            "  <body>\n"
 
-    private val FOOTER = "  </body>\n" +
-            "</html>"
+    companion object{
+        private var serverUp = false
+
+        private var selected: HashMap<String, Uri> = HashMap<String,Uri>()
+        private val HEADER = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "  <body>\n"
+
+        private val FOOTER = "  </body>\n" +
+                "</html>"
+
+        private val FILE_CHOOSER = 5
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -93,12 +99,13 @@ class UploadFragment : Fragment() {
         getfiles.setOnClickListener{
             val chooseFile: Intent
             val intent: Intent
-            chooseFile = Intent(Intent.ACTION_GET_CONTENT)
+            chooseFile = Intent(Intent.ACTION_OPEN_DOCUMENT)
             chooseFile.addCategory(Intent.CATEGORY_OPENABLE)
+            chooseFile.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             chooseFile.type = "*/*"
             chooseFile.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             intent = Intent.createChooser(chooseFile, "Choose a file")
-            startActivityForResult(intent, 5)
+            startActivityForResult(intent, FILE_CHOOSER)
 
         }
 
@@ -109,12 +116,10 @@ class UploadFragment : Fragment() {
 
         if(!serverUp){
             startServer(port)
-            true
-        } else{
-            stopServer()
-            false
+            serverUp = true
         }
 
+        Toast.makeText(getActivity()?.applicationContext,"It may take several minutes for the hidden service to be routable", Toast.LENGTH_LONG)
 
 
         return root
@@ -132,15 +137,19 @@ class UploadFragment : Fragment() {
         os.write(responseText.toByteArray())
         os.close()
     }
-    /*
+
     private fun sendFile(httpExchange: HttpExchange, uri: Uri?){
         //get file bytes
-        httpExchange.sendResponseHeaders(200, responseText.length.toLong())
+
+        var f = File(uri!!.path)
+        val responseText = f.readBytes()
+
+        httpExchange.sendResponseHeaders(200, responseText.size.toLong())
         val os = httpExchange.responseBody
-        os.write(responseText.toByteArray())
+        os.write(responseText)
         os.close()
     }
-*/
+
 
     private var mHttpServer: HttpServer? = null
 
@@ -174,12 +183,13 @@ class UploadFragment : Fragment() {
                         "/" -> {
                             //selected.joinToString(prefix = "<li><a href=\"yeet.html\">",  separator = "\n", postfix = "</a></li>") +
                             var ret = ""
-                            selected.keys.forEach { elm -> ret += "\n<li><a href=\"/$elm\">$elm</a></li>" }
+                            selected.keys.forEach { elm -> ret += "\n<li><a href=\"$elm\">$elm</a></li>" }
                             sendResponse(exchange, "$HEADER<ul>\n$ret</ul>$FOOTER")
                             return@run
                         } else -> {
                             if(selected.keys.contains(exchange.requestURI.path)){
-                                sendResponse(exchange, "success!\n")
+                                //sendResponse(exchange, "$HEADER<ul><li>hii</li><ul>$FOOTER")
+                                sendFile(exchange, selected.get(exchange.requestURI.path))
                                 return@run
                             }
                         }
@@ -197,16 +207,6 @@ class UploadFragment : Fragment() {
                 "GET" -> {
                     // Get all messages
                     sendResponse(httpExchange, "Would be all messages stringified json")
-                }
-                "POST" -> {
-                    val inputStream = httpExchange.requestBody
-
-                    val requestBody = streamToString(inputStream)
-                    val jsonBody = JSONObject(requestBody)
-                    // save message to database
-
-                    //for testing
-                    sendResponse(httpExchange, jsonBody.toString())
                 }
             }
         }
@@ -226,7 +226,7 @@ class UploadFragment : Fragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == 5) {
+        if (requestCode == FILE_CHOOSER) {
             if (resultCode == Activity.RESULT_OK){
                 if (null != data) {
                     if (null !=data.clipData) {
@@ -247,7 +247,6 @@ class UploadFragment : Fragment() {
             }
         }
     }
-
 
 
 }
