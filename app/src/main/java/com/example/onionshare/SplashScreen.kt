@@ -11,8 +11,6 @@ import java.net.UnknownHostException
 
 class SplashScreen : AppCompatActivity() {
 
-    private var _port = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.loading_screen)
@@ -64,7 +62,7 @@ class SplashScreen : AppCompatActivity() {
                 val onionAddress =
                     onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
                 println("Tor onion address of the server is: $onionAddress")
-                i.putExtra("URL", "http://" + onionAddress + ":" + hiddenServicePort.toString())
+                i.putExtra("URL", "http://${onionAddress}:"+hiddenServicePort.toString())
 
             } catch (e: Exception) {
                 runOnUiThread {
@@ -89,7 +87,4 @@ class SplashScreen : AppCompatActivity() {
 
     }
 
-    fun get_port(): Int {
-        return _port
-    }
 }
