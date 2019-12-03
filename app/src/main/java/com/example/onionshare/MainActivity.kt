@@ -58,8 +58,10 @@ class MainActivity : AppCompatActivity() {
 
     fun getpermissions(){
         var permission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-        if(permission != PackageManager.PERMISSION_GRANTED){
-            Log.i(TAG, "Permission for read external denied")
+        var permission2 = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        var permission3 = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
+
+        if(permission != PackageManager.PERMISSION_GRANTED || permission2 != PackageManager.PERMISSION_GRANTED || permission3 != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET), PERMISSIONS)
         }
     }

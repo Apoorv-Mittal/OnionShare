@@ -233,13 +233,13 @@ class UploadFragment : Fragment() {
                         for (i in 0 until data.clipData.itemCount) {
                             val uri = data.clipData.getItemAt(i).uri
 
-                            selected.put(/*"/" + */getImageFilePath(getActivity()?.applicationContext , uri), uri)
+                            selected.put("/" + getImageFilePath(getActivity()?.applicationContext , uri), uri)
                             Toast.makeText(getActivity()?.applicationContext, "Filename put into map",
                                 Toast.LENGTH_LONG).show()
                         }
                     } else {
                         val uri = data.data
-                        selected.put(/*"/" + */getImageFilePath(getActivity()?.applicationContext , uri), uri)
+                        selected.put("/" + getImageFilePath(getActivity()?.applicationContext , uri), uri)
                         Toast.makeText(getActivity()?.applicationContext, "Filename put into map",
                             Toast.LENGTH_LONG).show()
                     }
