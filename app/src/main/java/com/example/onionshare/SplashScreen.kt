@@ -2,31 +2,11 @@ package com.example.onionshare
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import cz.msebera.android.httpclient.client.HttpClient
-import cz.msebera.android.httpclient.client.methods.HttpGet
-import cz.msebera.android.httpclient.client.protocol.HttpClientContext
-import cz.msebera.android.httpclient.config.RegistryBuilder
 import cz.msebera.android.httpclient.conn.DnsResolver
-import cz.msebera.android.httpclient.conn.socket.ConnectionSocketFactory
-import cz.msebera.android.httpclient.impl.client.HttpClients
-import cz.msebera.android.httpclient.impl.conn.PoolingHttpClientConnectionManager
-import cz.msebera.android.httpclient.ssl.SSLContexts
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.net.InetAddress
-import java.net.InetSocketAddress
 import java.net.UnknownHostException
-import java.io.File
-import com.msopentech.thali.toronionproxy.Utilities
-import android.system.Os.accept
-import android.R.attr.port
-import android.content.Context
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import java.io.ObjectInputStream
-import java.net.ServerSocket
 
 
 class SplashScreen : AppCompatActivity() {
@@ -45,19 +25,6 @@ class SplashScreen : AppCompatActivity() {
         override fun resolve(host: String): Array<InetAddress> {
             return arrayOf(InetAddress.getByAddress(byteArrayOf(1, 1, 1, 1)))
         }
-    }
-
-
-    fun getNewHttpClient(): HttpClient {
-
-        val reg = RegistryBuilder.create<ConnectionSocketFactory>()
-            .register("http", MyConnectionSocketFactory())
-            .register("https", MySSLConnectionSocketFactory(SSLContexts.createSystemDefault()))
-            .build()
-        val cm = PoolingHttpClientConnectionManager(reg, FakeDnsResolver())
-        return HttpClients.custom()
-            .setConnectionManager(cm)
-            .build()
     }
 
 
@@ -80,8 +47,11 @@ class SplashScreen : AppCompatActivity() {
                     totalSecondsPerTorStartup,
                     totalTriesPerTorStartup
                 )
-                if (!ok)
+                if (!ok) {
                     println("Couldn't start tor")
+                    Toast.makeText(applicationContext,"TOR wasn't able to start", Toast.LENGTH_LONG).show()
+                    finishAndRemoveTask()
+                }
 
                 while (!onionProxyManager.isRunning)
                     Thread.sleep(90)
@@ -97,8 +67,11 @@ class SplashScreen : AppCompatActivity() {
                 i.putExtra("URL", "http://" + onionAddress + ":" + hiddenServicePort.toString())
 
             } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(applicationContext, "TOR Library was not able to perform its tasks", Toast.LENGTH_LONG).show()
+                }
+                finishAndRemoveTask()
                 e.printStackTrace()
-
             }
 
             i.putExtra("Result", "success")

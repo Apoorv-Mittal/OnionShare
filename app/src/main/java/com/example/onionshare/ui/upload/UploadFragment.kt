@@ -18,6 +18,7 @@ import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.widget.Toast
 
 import com.sun.net.httpserver.*
@@ -102,7 +103,7 @@ class UploadFragment : Fragment() {
             serverUp = true
         }
 
-        Toast.makeText(getActivity()?.applicationContext,"It may take several minutes for the hidden service to be routable", Toast.LENGTH_LONG)
+        Toast.makeText(activity?.applicationContext,"It may take several minutes for the hidden service to be routable", Toast.LENGTH_LONG).show()
 
 
         return root
