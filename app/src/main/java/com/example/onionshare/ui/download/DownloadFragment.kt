@@ -148,23 +148,36 @@ class DownloadFragment : Fragment() {
 
             val tor_url = url[0]!!.first
             var list = url[0]!!.second
+            try {
+                val httpGet = HttpGet(tor_url)
+                val httpResponse = httpClient.execute(httpGet, httpcontext)
+                val httpEntity = httpResponse.entity
+                val httpResponseStream = httpEntity.content
 
-            val httpGet = HttpGet(tor_url)
-            val httpResponse = httpClient.execute(httpGet, httpcontext)
-            val httpEntity = httpResponse.entity
-            val httpResponseStream = httpEntity.content
+                // Reading the html of the url to get urls of files using regex?
+                // Not sure if correct implementation, should look more into this after figuring out how html works with url
+                val doc = Jsoup.parse(httpResponseStream, null, tor_url)
 
-            // Reading the html of the url to get urls of files using regex?
-            // Not sure if correct implementation, should look more into this after figuring out how html works with url
-            val doc = Jsoup.parse(httpResponseStream,null,tor_url)
-
-            doc.select("a").forEach { e ->
-                   var filename = e.attr("href")
-                   var url = e.attr("abs:href")
-                   list.add(FileClass(String(Base64.decode(filename.substring(1),Base64.DEFAULT)),url,false))
+                doc.select("a").forEach { e ->
+                    var filename = e.attr("href")
+                    var url = e.attr("abs:href")
+                    list.add(
+                        FileClass(
+                            String(Base64.decode(filename.substring(1), Base64.DEFAULT)),
+                            url,
+                            false
+                        )
+                    )
+                }
+            } catch (e: Exception){
+                activity?.runOnUiThread {
+                    Toast.makeText(activity?.applicationContext, "The URL is not available or incorrect", Toast.LENGTH_LONG).show()
+                }
+                e.printStackTrace()
+            } finally {
+                return ""
             }
 
-            return ""
         }
     }
 
