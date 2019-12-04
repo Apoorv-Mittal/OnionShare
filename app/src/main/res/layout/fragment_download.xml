@@ -29,8 +29,12 @@
     <ListView
         android:id="@+id/filesList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_below="@+id/button_connect"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/text_download"
         app:layout_constraintBottom_toTopOf="@id/button_connect"
         app:layout_constraintLeft_toLeftOf="parent"
