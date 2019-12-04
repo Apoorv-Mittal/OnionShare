@@ -69,6 +69,7 @@ class DownloadFragment : Fragment() {
             connecttask().execute(Pair(textView.text.toString(), filesList)).get()
             val fileAdapter = FileList(getActivity()!!, filesList)
             listViewFiles.adapter = fileAdapter
+            Toast.makeText(activity?.applicationContext, "Fetching Link contents",Toast.LENGTH_SHORT).show()
         }
 
 
