@@ -66,10 +66,10 @@ class DownloadFragment : Fragment() {
         filesList = ArrayList()
 
         connectButton.setOnClickListener {
+            Toast.makeText(activity?.applicationContext, "Fetching Link contents",Toast.LENGTH_LONG).show()
             connecttask().execute(Pair(textView.text.toString(), filesList)).get()
             val fileAdapter = FileList(getActivity()!!, filesList)
             listViewFiles.adapter = fileAdapter
-            Toast.makeText(activity?.applicationContext, "Fetching Link contents",Toast.LENGTH_SHORT).show()
         }
 
 
@@ -101,7 +101,7 @@ class DownloadFragment : Fragment() {
 
                     }
                 } else {
-                    Toast.makeText(getActivity()?.applicationContext, "File already downloaded",Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity?.applicationContext, "File already downloaded",Toast.LENGTH_LONG).show()
 
                 }
 
