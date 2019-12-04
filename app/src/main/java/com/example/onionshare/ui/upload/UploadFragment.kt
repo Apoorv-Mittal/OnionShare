@@ -19,9 +19,13 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.widget.ListView
 import android.widget.Toast
+import com.example.onionshare.FileClass
+import com.example.onionshare.FileList
 
 import com.sun.net.httpserver.*
+import kotlinx.android.synthetic.main.fragment_upload.*
 import java.io.IOException
 import java.io.InputStream
 import java.net.InetSocketAddress
@@ -33,9 +37,14 @@ class UploadFragment : Fragment() {
 
     private lateinit var uploadViewModel: UploadViewModel
 
+    private lateinit var listViewFiles: ListView
+
 
     companion object{
         private var serverUp = false
+
+        private var filelistdisplay: MutableList<FileClass> = ArrayList()
+
 
         private var selected: HashMap<String, Uri> = HashMap<String,Uri>()
         private val HEADER = "<!DOCTYPE html>\n" +
@@ -64,6 +73,14 @@ class UploadFragment : Fragment() {
         uploadViewModel.change((activity as MainActivity).getUrl())
 
 
+        //val fileAdapter = FileList(getActivity()!!, filelistdisplay)
+        //listViewFiles.adapter = fileAdapter
+        listViewFiles = root.findViewById(R.id.filesList)
+        val fileAdapter = FileList(getActivity()!!, filelistdisplay)
+        listViewFiles.adapter = fileAdapter
+
+
+
         val pasteButton: Button = root.findViewById(R.id.copy_button)
 
         pasteButton.setOnClickListener {
@@ -90,7 +107,6 @@ class UploadFragment : Fragment() {
             chooseFile.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             intent = Intent.createChooser(chooseFile, "Choose a file")
             startActivityForResult(intent, FILE_CHOOSER)
-
         }
 
 
@@ -100,6 +116,7 @@ class UploadFragment : Fragment() {
 
         if(!serverUp){
             startServer(port)
+
             serverUp = true
         }
 
@@ -107,6 +124,13 @@ class UploadFragment : Fragment() {
 
 
         return root
+    }
+
+    override fun onResume(){
+        super.onResume()
+        val fileAdapter = FileList(getActivity()!!, filelistdisplay)
+        listViewFiles.adapter = fileAdapter
+
     }
 
 
@@ -145,6 +169,8 @@ class UploadFragment : Fragment() {
             mHttpServer!!.createContext("/", rootHandler)
             mHttpServer!!.start()//startServer server;
 
+
+
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -159,6 +185,7 @@ class UploadFragment : Fragment() {
 
     // Handler for root endpoint
     private val rootHandler = HttpHandler { exchange ->
+
         run {
             // Get request method
             when (exchange!!.requestMethod) {
@@ -169,6 +196,7 @@ class UploadFragment : Fragment() {
                             var ret = ""
                             selected.keys.forEach { elm -> ret += "\n<li><a href=\"$elm\">$elm</a></li>" }
                             sendResponse(exchange, "$HEADER<ul>\n$ret</ul>$FOOTER")
+
                             return@run
                         } else -> {
                             if(selected.keys.contains(exchange.requestURI.path)){
@@ -244,13 +272,29 @@ class UploadFragment : Fragment() {
                     if (null !=data.clipData) {
                         for (i in 0 until data.clipData.itemCount) {
                             val uri = data.clipData.getItemAt(i).uri
+                            val filename = "/"+getFileName(getActivity()?.applicationContext,uri)
 
+                            filelistdisplay.add(FileClass(
+                                String(android.util.Base64.decode(filename.substring(1), android.util.Base64.DEFAULT)),
+                                uri.toString(),
+                                false
+                            ))
                             selected.put("/" + getFileName(getActivity()?.applicationContext,uri) , uri)
+
+
+
                             Toast.makeText(getActivity()?.applicationContext, "Filename put into map",
                                 Toast.LENGTH_LONG).show()
                         }
                     } else {
                         val uri = data.data
+                        val filename = "/"+getFileName(getActivity()?.applicationContext,uri)
+
+                        filelistdisplay.add(FileClass(
+                            String(android.util.Base64.decode(filename.substring(1), android.util.Base64.DEFAULT)),
+                            uri.toString(),
+                            false
+                        ))
                         selected.put("/" + getFileName(getActivity()?.applicationContext,uri) , uri)
                         Toast.makeText(getActivity()?.applicationContext, "Filename put into map",
                             Toast.LENGTH_LONG).show()

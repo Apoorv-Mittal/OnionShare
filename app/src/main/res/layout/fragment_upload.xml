@@ -34,19 +34,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.089" />
 
-    <TextView
-        android:id="@+id/file_selection"
-        android:layout_width="375dp"
-        android:layout_height="436dp"
-        android:ems="10"
-        android:gravity="start|top"
-        android:inputType="textMultiLine"
+    <ListView
+        android:id="@+id/filesList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_connect"
+        android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.583"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.315" />
+        app:layout_constraintVertical_bias="0.469" />
+
 
     <Button
         android:id="@+id/file_selction_button"
