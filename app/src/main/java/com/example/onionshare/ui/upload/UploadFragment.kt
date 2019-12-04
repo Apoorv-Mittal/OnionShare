@@ -200,8 +200,6 @@ class UploadFragment : Fragment() {
                             return@run
                         } else -> {
                             if(selected.keys.contains(exchange.requestURI.path)){
-                                //sendResponse(exchange, "$HEADER<ul><li>hii</li><ul>$FOOTER")
-
                                 sendFile(activity?.applicationContext,exchange, selected.get(exchange.requestURI.path))
                                 return@run
                             }
@@ -274,11 +272,20 @@ class UploadFragment : Fragment() {
                             val uri = data.clipData.getItemAt(i).uri
                             val filename = "/"+getFileName(getActivity()?.applicationContext,uri)
 
-                            filelistdisplay.add(FileClass(
-                                String(android.util.Base64.decode(filename.substring(1), android.util.Base64.DEFAULT)),
-                                uri.toString(),
-                                false
-                            ))
+                            if(!selected.containsKey(filename)) {
+                                filelistdisplay.add(
+                                    FileClass(
+                                        String(
+                                            android.util.Base64.decode(
+                                                filename.substring(1),
+                                                android.util.Base64.DEFAULT
+                                            )
+                                        ),
+                                        uri.toString(),
+                                        false
+                                    )
+                                )
+                            }
                             selected.put("/" + getFileName(getActivity()?.applicationContext,uri) , uri)
 
 
@@ -289,12 +296,20 @@ class UploadFragment : Fragment() {
                     } else {
                         val uri = data.data
                         val filename = "/"+getFileName(getActivity()?.applicationContext,uri)
-
-                        filelistdisplay.add(FileClass(
-                            String(android.util.Base64.decode(filename.substring(1), android.util.Base64.DEFAULT)),
-                            uri.toString(),
-                            false
-                        ))
+                        if(!selected.containsKey(filename)) {
+                            filelistdisplay.add(
+                                FileClass(
+                                    String(
+                                        android.util.Base64.decode(
+                                            filename.substring(1),
+                                            android.util.Base64.DEFAULT
+                                        )
+                                    ),
+                                    uri.toString(),
+                                    false
+                                )
+                            )
+                        }
                         selected.put("/" + getFileName(getActivity()?.applicationContext,uri) , uri)
                         Toast.makeText(getActivity()?.applicationContext, "Filename put into map",
                             Toast.LENGTH_LONG).show()
