@@ -2,25 +2,12 @@ package com.example.onionshare
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import cz.msebera.android.httpclient.client.HttpClient
-import cz.msebera.android.httpclient.client.methods.HttpGet
-import cz.msebera.android.httpclient.client.protocol.HttpClientContext
-import cz.msebera.android.httpclient.config.RegistryBuilder
 import cz.msebera.android.httpclient.conn.DnsResolver
-import cz.msebera.android.httpclient.conn.socket.ConnectionSocketFactory
-import cz.msebera.android.httpclient.impl.client.HttpClients
-import cz.msebera.android.httpclient.impl.conn.PoolingHttpClientConnectionManager
-import cz.msebera.android.httpclient.ssl.SSLContexts
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.net.InetAddress
-import java.net.InetSocketAddress
 import java.net.UnknownHostException
-
-
-
-
 
 
 class SplashScreen : AppCompatActivity() {
@@ -28,6 +15,10 @@ class SplashScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.loading_screen)
+        window.decorView.apply {
+            systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN
+        }
+
 
         TorTask().execute()
     }
@@ -40,82 +31,57 @@ class SplashScreen : AppCompatActivity() {
     }
 
 
-    fun getNewHttpClient(): HttpClient {
-
-        val reg = RegistryBuilder.create<ConnectionSocketFactory>()
-            .register("http", MyConnectionSocketFactory())
-            .register("https", MySSLConnectionSocketFactory(SSLContexts.createSystemDefault()))
-            .build()
-        val cm = PoolingHttpClientConnectionManager(reg, FakeDnsResolver())
-        return HttpClients.custom()
-            .setConnectionManager(cm)
-            .build()
-    }
-
-
     private inner class TorTask : android.os.AsyncTask<String, Int, String>() {
 
         private lateinit var i : Intent
 
+
         override fun doInBackground(vararg strings: String): String {
-            var l: String = ""
-            val fileStorageLocation = "torfiles"
+            val fileStorageLocation = "hiddenservicemanager"
             val onionProxyManager =
                 com.msopentech.thali.android.toronionproxy.AndroidOnionProxyManager(
-                    applicationContext, fileStorageLocation
+                    applicationContext,
+                    fileStorageLocation
                 )
-            val totalSecondsPerTorStartup = 4 * 60
+            val totalSecondsPerTorStartup = 60
             val totalTriesPerTorStartup = 5
             try {
                 val ok = onionProxyManager.startWithRepeat(
                     totalSecondsPerTorStartup,
                     totalTriesPerTorStartup
                 )
-                if (!ok)
+                if (!ok) {
                     println("Couldn't start tor")
+                    Toast.makeText(applicationContext,"TOR wasn't able to start", Toast.LENGTH_LONG).show()
+                    finishAndRemoveTask()
+                }
 
                 while (!onionProxyManager.isRunning)
                     Thread.sleep(90)
                 println("Tor initialized on port " + onionProxyManager.iPv4LocalHostSocksPort)
 
-                val hiddenServicePort = 80
-                val localPort = 9343
+                i.putExtra("port",onionProxyManager.iPv4LocalHostSocksPort)
 
+                val hiddenServicePort = 443
+                val localPort = 9343
                 val onionAddress =
                     onionProxyManager.publishHiddenService(hiddenServicePort, localPort)
+                println("Tor onion address of the server is: $onionAddress")
+                i.putExtra("URL", "http://${onionAddress}:"+hiddenServicePort.toString())
 
-                i.putExtra("URL", onionAddress)
-
-
-                val httpClient = getNewHttpClient()
-                val port = onionProxyManager.iPv4LocalHostSocksPort
-                val socksaddr = InetSocketAddress("127.0.0.1", port)
-                val context = HttpClientContext.create()
-                context.setAttribute("socks.address", socksaddr)
-
-                //http://wikitjerrta4qgz4.onion/
-                //https://api.duckduckgo.com/?q=whats+my+ip&format=json
-                val httpGet = HttpGet("http://wikitjerrta4qgz4.onion/")
-                val httpResponse = httpClient.execute(httpGet, context)
-                val httpEntity = httpResponse.entity
-                val httpResponseStream = httpEntity.content
-
-                val httpResponseReader = BufferedReader(
-                    InputStreamReader(httpResponseStream, "iso-8859-1"), 8
-                )
-
-                for (line in httpResponseReader.lines()) {
-                    l = l.plus(line)
-                    println(line)
-                }
-
-                httpResponseStream.close()
             } catch (e: Exception) {
+                runOnUiThread {
+                    Toast.makeText(applicationContext, "TOR Library was not able to perform its tasks", Toast.LENGTH_LONG).show()
+                }
+                finishAndRemoveTask()
                 e.printStackTrace()
-
             }
 
-            return l
+            i.putExtra("Result", "success")
+            startActivity(i)
+            finish()
+
+            return ""
         }
 
         override fun onPreExecute() {
@@ -123,10 +89,7 @@ class SplashScreen : AppCompatActivity() {
             i.action = "com.onionshare.main"
         }
 
-        override fun onPostExecute(result: String) {
-            i.putExtra("Result", result)
-            startActivity(i)
-            finish()
-        }
+
     }
+
 }
