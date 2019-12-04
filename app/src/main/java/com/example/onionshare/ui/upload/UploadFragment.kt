@@ -95,7 +95,7 @@ class UploadFragment : Fragment() {
             }
         }
 
-        val getfiles: Button = root.findViewById(R.id.file_selction_button)
+        val getfiles: Button = root.findViewById(R.id.file_selection_button)
 
         getfiles.setOnClickListener{
             val chooseFile: Intent

@@ -12,6 +12,7 @@ import androidx.navigation.ui.setupWithNavController
 import android.Manifest
 import android.content.pm.PackageManager
 import android.util.Log
+import android.view.View
 import androidx.core.app.ActivityCompat
 
 

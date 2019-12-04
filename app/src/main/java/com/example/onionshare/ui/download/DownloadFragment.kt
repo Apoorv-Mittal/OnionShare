@@ -55,7 +55,7 @@ class DownloadFragment : Fragment() {
         port = (activity as MainActivity).get_port()
 
         val textView: TextView = root.findViewById(R.id.text_download)
-        val pasteButton: Button = root.findViewById(R.id.paste_botton)
+        val pasteButton: Button = root.findViewById(R.id.paste_button)
 
         val connectButton = root.findViewById(R.id.button_connect) as Button  //Button to connect to url
 
