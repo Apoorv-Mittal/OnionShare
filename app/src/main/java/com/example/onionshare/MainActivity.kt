@@ -1,7 +1,6 @@
 package com.example.onionshare
 
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -10,7 +9,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.msopentech.thali.android.toronionproxy.AndroidOnionProxyManager
 import android.Manifest
 import android.content.pm.PackageManager
 import android.util.Log
@@ -46,8 +44,6 @@ class MainActivity : AppCompatActivity() {
 
 
         URL = intent.getStringExtra("URL")
-        port = intent.getIntExtra("port",-1)
-
         port = intent.getIntExtra("port", -1)
 
         val a = intent.getStringExtra("Result")
@@ -70,7 +66,6 @@ class MainActivity : AppCompatActivity() {
         when(requestCode){
             PERMISSIONS -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-
                     Log.i(TAG, "Permission has been denied by user")
                 } else {
                     Log.i(TAG, "Permission has been granted by user")
