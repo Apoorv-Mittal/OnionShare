@@ -8,12 +8,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.AsyncTask
-import android.os.Build
 import android.os.Environment
 import android.util.Base64
 import android.widget.*
@@ -37,9 +35,6 @@ class DownloadFragment : Fragment() {
     private lateinit var downloadViewModel: DownloadViewModel
 
     var port = 0
-    
-    private var myClipboard: ClipboardManager? = null
-    private var myClip: ClipData? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,17 +70,14 @@ class DownloadFragment : Fragment() {
 
         // Clicking on fileitem on displayed list of files
         listViewFiles.onItemClickListener =
-            AdapterView.OnItemClickListener { adapterView, view, i, l ->
+            AdapterView.OnItemClickListener { _, _, i, _ ->
                 val file_item = filesList[i]
 
-                val file_url = file_item.fileurl
-
                 // Permissions
-                if (file_item.downloaded == false) {   // If file hasn't been downloaded yet
+                if (!file_item.downloaded) {   // If file hasn't been downloaded yet
                                                                     // All FileClass items initiated with
                                                                     // downloaded = false
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                        ContextCompat.checkSelfPermission(
+                    if (ContextCompat.checkSelfPermission(
                             context!!,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE
                         ) !=
@@ -107,7 +99,7 @@ class DownloadFragment : Fragment() {
 
             }
 
-        // Paste function implemented by chris
+        // Paste function
         pasteButton.setOnClickListener {
             val clipboard =
                 context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
@@ -161,11 +153,10 @@ class DownloadFragment : Fragment() {
 
                 doc.select("a").forEach { e ->
                     var filename = e.attr("href")
-                    var url = e.attr("abs:href")
                     list.add(
                         FileClass(
                             String(Base64.decode(filename.substring(1), Base64.DEFAULT)),
-                            url,
+                            e.attr("abs:href"),
                             false
                         )
                     )
@@ -218,17 +209,9 @@ class DownloadFragment : Fragment() {
             return ""
         }
 
-        override fun onPreExecute() {
-            super.onPreExecute()
-        }
-
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
             Toast.makeText(getActivity()?.applicationContext, "File downloaded",Toast.LENGTH_LONG).show()
-        }
-
-        override fun onProgressUpdate(vararg values: Void?) {
-            super.onProgressUpdate(*values)
         }
 
     }

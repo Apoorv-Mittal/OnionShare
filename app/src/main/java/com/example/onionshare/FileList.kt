@@ -1,10 +1,9 @@
 package com.example.onionshare
-import android.app.Activity
+
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import android.widget.ProgressBar
 import androidx.fragment.app.FragmentActivity
 
 // Based off the firebase project
@@ -15,7 +14,6 @@ class FileList(private val context: FragmentActivity, internal var fileslist: Li
         val inflater = context.layoutInflater
         val listViewItem = inflater.inflate(R.layout.file_item, null, true)
         val filename = listViewItem.findViewById<View>(R.id.file_object) as TextView
-        val status = listViewItem.findViewById<View>(R.id.status) as TextView
         val thisFile = fileslist[position]
         filename.text = thisFile.filename
         return listViewItem

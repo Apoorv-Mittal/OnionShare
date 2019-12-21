@@ -25,7 +25,6 @@ import com.example.onionshare.FileClass
 import com.example.onionshare.FileList
 
 import com.sun.net.httpserver.*
-import kotlinx.android.synthetic.main.fragment_upload.*
 import java.io.IOException
 import java.io.InputStream
 import java.net.InetSocketAddress
@@ -146,13 +145,13 @@ class UploadFragment : Fragment() {
         os.close()
     }
 
-    private fun sendFile(context: Context?,httpExchange: HttpExchange, uri: Uri?){
+    private fun sendFile(context: Context?,httpExchange: HttpExchange, uri: Uri){
         //get file bytes
 
-        var responseText = context!!.contentResolver.openInputStream(uri).readBytes()
+        var responseText = context!!.contentResolver.openInputStream(uri)?.readBytes()
 
 
-        httpExchange.sendResponseHeaders(200, responseText.size.toLong())
+        httpExchange.sendResponseHeaders(200, responseText!!.size.toLong())
         val os = httpExchange.responseBody
         os.write(responseText)
         os.close()
@@ -200,7 +199,7 @@ class UploadFragment : Fragment() {
                             return@run
                         } else -> {
                             if(selected.keys.contains(exchange.requestURI.path)){
-                                sendFile(activity?.applicationContext,exchange, selected.get(exchange.requestURI.path))
+                                sendFile(activity?.applicationContext,exchange, selected.get(exchange.requestURI.path)!!)
                                 return@run
                             }
                         }
@@ -224,7 +223,7 @@ class UploadFragment : Fragment() {
     }
 
     fun getImageFilePath(context:Context?, uri: Uri?): String{
-        var cursor: Cursor? = context!!.getContentResolver().query(uri, null, null, null, null)
+        var cursor: Cursor? = context!!.getContentResolver().query(uri!!, null, null, null, null)
         cursor!!.moveToFirst();
         var image_id = cursor.getString(0);
         image_id = image_id.substring(image_id.lastIndexOf(":") + 1);
@@ -240,10 +239,10 @@ class UploadFragment : Fragment() {
         var result = ""
 
         if (uri?.getScheme().equals("content")) {
-            var cursor: Cursor? = context!!.getContentResolver().query(uri, null, null, null, null)
+            var cursor: Cursor? = context!!.getContentResolver().query(uri!!, null, null, null, null)
             try {
-                if (cursor!=null && cursor!!.moveToFirst()){
-                    result = cursor!!.getString(cursor!!.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                if (cursor!=null && cursor.moveToFirst()){
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                 }
             }finally {
                 cursor!!.close()
@@ -251,7 +250,7 @@ class UploadFragment : Fragment() {
         }
 
         if(result == ""){
-            result = uri!!.path
+            result = uri!!.path as String
             val cut = result.lastIndexOf('/')
 
             if (cut != -1) {
@@ -268,8 +267,8 @@ class UploadFragment : Fragment() {
             if (resultCode == Activity.RESULT_OK){
                 if (null != data) {
                     if (null !=data.clipData) {
-                        for (i in 0 until data.clipData.itemCount) {
-                            val uri = data.clipData.getItemAt(i).uri
+                        for (i in 0 until data.clipData!!.itemCount) {
+                            val uri = data.clipData!!.getItemAt(i).uri
                             val filename = "/"+getFileName(getActivity()?.applicationContext,uri)
 
                             if(!selected.containsKey(filename)) {
@@ -305,12 +304,12 @@ class UploadFragment : Fragment() {
                                             android.util.Base64.DEFAULT
                                         )
                                     ),
-                                    uri.toString(),
+                                    uri!!.toString(),
                                     false
                                 )
                             )
                         }
-                        selected.put("/" + getFileName(getActivity()?.applicationContext,uri) , uri)
+                        selected.put("/" + getFileName(getActivity()?.applicationContext,uri) , uri!!)
                         Toast.makeText(getActivity()?.applicationContext, "Filename put into map",
                             Toast.LENGTH_LONG).show()
                     }
